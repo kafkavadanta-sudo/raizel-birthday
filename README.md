@@ -29,19 +29,29 @@ npx serve .          # then open the printed URL
 You shouldn't need to touch `js/app.js`.
 
 ### Photos
-1. Resize to about 1200px on the long side and save as **WebP** at quality ~75.
-   [squoosh.app](https://squoosh.app) does this in the browser.
-2. Put the files in:
-   - `assets/photos/conveyor/`: the scrolling strip under the hero (5–10 photos)
-   - `assets/photos/favorites/`: "My Favorite Pics of You" (6–7 photos; the first one is shown big)
-   - `assets/photos/dates/`: one per key date
-3. Update the file names in `js/content.js`.
+Every drop spot has a `_PUT … HERE.txt` note inside it.
 
-The files there now are pastel placeholders.
+| Where | What to drop | Notes |
+| --- | --- | --- |
+| `assets/photos/conveyor/` | `AFFECTUM CAROUSELS - 1.png` … `- 8.png` | Moving strip under the hero. The list is in `js/content.js` → `conveyorPhotos`. |
+| `assets/photos/gallery/` | `GALLERY - 1.png` … `- 10.png` | "Gallery of My Favorite Pics". The list is in `js/content.js` → `gallery.photos`. |
+| `assets/photos/dates/<DATE>/` | any images, e.g. `assets/photos/dates/3 JULY 2026/1.jpg` | One folder per calendar date. They already exist. Photos show in file-name order. |
 
-### Key dates
-In `js/content.js` → `dates.events`, each key is a date `"YYYY-MM-DD"` with a `title`, `photo`, `story` and `why`.
-Add or remove entries freely. The calendar range is set by `startMonth` / `endMonth`.
+A photo that isn't there yet is skipped, never shown broken.
+A date with an empty folder just shows its story.
+
+**Date folders are picked up automatically on deploy**, because Vercel and Netlify run `node tools/build-photo-manifest.js`.
+If you preview locally, run that command once after adding photos.
+
+Big PNGs are slow on phones.
+If you can, export them at about 1600px on the long side, or convert them to JPG/WebP at [squoosh.app](https://squoosh.app).
+If you rename a file, update its name in `js/content.js`.
+
+### Remember This Day? (calendar)
+Each date lives in `js/content.js` → `dates.events` as `"YYYY-MM-DD": { title, story }`.
+- `highlightDate` is the gold box (May 1, 2026).
+- `togetherSince` is where the little hearts start. They extend to today automatically.
+- To point a date at a differently named folder, add `folder: "My Folder"` to it.
 
 ### Links
 In `js/content.js`:
@@ -63,8 +73,10 @@ Codes ignore spaces and upper/lower case.
 > ⚠️ The current codes are placeholders (`CODE1` … `CODE4`). Replace them before the big day.
 
 ### Music
-By default a soft piano loop is generated in the browser, so there's no file to download.
-To use your own track, drop an mp3/m4a into `assets/audio/` and set `audio.src` in `js/content.js`.
+Drop the song into `assets/audio/`, named exactly:
+`i think you were in my profile picture once (instrumental).mp3`
+
+It loops forever. Until the file is there, a soft built-in piano loop plays instead.
 
 Music only starts after her first tap (Safari rule), gets louder over screens 8–12, and has a mute button bottom-right.
 On iPhone, the ringer/silent switch can mute web audio on older iOS versions.
@@ -75,9 +87,9 @@ To swap them, change the `<link>` in `index.html` and `--font-display` / `--font
 
 ## Deploy
 
-It's a static site, so there are no build settings. Either:
-- **Vercel:** import the repo, framework preset "Other", no build command, output directory `.`
-- **Netlify:** import the repo (`netlify.toml` is included), or drag the folder onto app.netlify.com/drop
+It's a static site. The only build step is the one-line photo-list script, and it's already configured:
+- **Vercel:** `vercel.json` sets the build command and output directory (`.`).
+- **Netlify:** `netlify.toml` does the same.
 
 The page has `noindex` set so search engines skip it.
 
@@ -85,3 +97,4 @@ The page has `noindex` set so search engines skip it.
 - `rb.journey`: journey progress/finished
 - `rb.bucket`: checked items and items she added
 - `rb.gifts`: gifts she has unlocked
+- `rb.future`: her "A Note From The Future" letters

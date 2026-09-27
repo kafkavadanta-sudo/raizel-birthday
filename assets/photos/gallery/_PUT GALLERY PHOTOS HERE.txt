@@ -1,0 +1,3 @@
+Drop the gallery photos here:
+  GALLERY - 1.png … GALLERY - 10.png
+(listed in js/content.js → gallery.photos)

@@ -36,11 +36,16 @@ window.Ambient = (function () {
 
     var src = window.SITE && SITE.audio && SITE.audio.src;
     if (src) {
-      el = new Audio(src);
+      el = new Audio(encodeURI(src));
       el.loop = true;
       el.preload = "auto";
       el.setAttribute("playsinline", "");
       ctx.createMediaElementSource(el).connect(master);
+      // If the mp3 isn't there yet, fall back to the built-in piano loop
+      el.addEventListener("error", function () {
+        el = null;
+        if (playing && !document.hidden) startSynth();
+      });
     }
     return true;
   }

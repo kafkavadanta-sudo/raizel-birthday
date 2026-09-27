@@ -247,6 +247,7 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .nav-bar { max-width: 640px; margin: 0 auto; height: 56px; display: flex; align-items: center; justify-content: space-between; }
 .nav-brand { font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--ink); text-decoration: none; padding: 6px; }
 .nav-brand span { color: #ff7b8a; }
+.nav-brand[aria-label] { font-size: 26px; line-height: 1; }
 .nav-toggle {
   display: inline-flex; align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 9px 16px;
@@ -315,6 +316,19 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .fact { background: var(--cream); border-radius: 14px; padding: 8px 12px; font-size: 14px; }
 .fact b { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.about-sub { font-size: 20px; margin-bottom: 10px; }
+.generals { margin: 0; display: grid; gap: 0; }
+.general { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px dashed rgba(0, 0, 0, .1); }
+.general:last-child { border-bottom: 0; padding-bottom: 0; }
+.general dt { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding-top: 2px; }
+.general dd { margin: 0; font-weight: 600; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.about-item { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+.about-item:nth-child(4n+1) { background: var(--pink); }
+.about-item:nth-child(4n+2) { background: var(--peach); }
+.about-item:nth-child(4n+3) { background: var(--blush); }
+.about-item b { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.about-item span { font-weight: 600; font-size: 15px; line-height: 1.35; }
 
 /* ---------- Calendar ---------- */
 .cal-card { padding: 16px 12px 18px; }
@@ -339,6 +353,20 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .cal-day.event::after { content: "❤"; position: absolute; top: -3px; right: -1px; font-size: 10px; color: #e2475a; }
 .cal-day.event:active { transform: scale(.9); }
 @keyframes glow { 50% { box-shadow: 0 3px 14px rgba(255, 110, 110, .6); } }
+/* little heart on every "together" day (May 1, 2026 → today) */
+.cal-day.together::before { content: "♥"; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); font-size: 9px; line-height: 1; color: #ff6f85; }
+.cal-day.event.together::before { color: #c2334a; }
+/* the day we started dating — gold box */
+.cal-day.gold {
+  background: linear-gradient(145deg, #FFF1A8, #F7C948 60%, #E9B21F);
+  outline: 2px solid #C99A0E; outline-offset: -2px;
+  box-shadow: 0 3px 12px rgba(214, 160, 20, .55);
+  animation: goldGlow 2.6s ease-in-out infinite;
+}
+.cal-day.gold::after { content: "★"; color: #A57800; }
+@keyframes goldGlow { 50% { box-shadow: 0 3px 18px rgba(233, 178, 31, .85); } }
+.chip.gold { background: linear-gradient(145deg, #FFF4BF, #FBD869); }
+.chip.gold small { color: #8a6500; }
 
 .timeline { display: flex; gap: 10px; overflow-x: auto; padding: 16px 2px 8px; scrollbar-width: none; scroll-snap-type: x proximity; }
 .timeline::-webkit-scrollbar { display: none; }
@@ -370,6 +398,7 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .letter-card h3 { font-size: 19px; }
 .letter-card .open { font-size: 12px; font-weight: 700; color: var(--muted); }
 .letter-card:first-child { grid-column: 1 / -1; min-height: 120px; }
+.letter-card.journal-card { grid-column: 1 / -1; min-height: 120px; background: linear-gradient(160deg, #fff 50%, var(--cream)); }
 
 /* ---------- Numbers ---------- */
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -444,6 +473,8 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .gallery button:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
 .gallery button:active { transform: scale(.97); }
 .gallery img { width: 100%; height: 100%; object-fit: cover; }
+.gallery button:last-child:nth-child(even) { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+.gallery .soon { grid-column: 1 / -1; text-align: center; }
 
 /* ---------- Playlist ---------- */
 .playlist-card { padding: 16px; }
@@ -521,6 +552,50 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .modal-body p { margin: 0; }
 .letter-text { white-space: pre-line; font-size: 17px; line-height: 1.7; margin-top: 16px !important; }
 .letter-paper { background: repeating-linear-gradient(transparent 0 28px, rgba(255, 150, 150, .16) 28px 29px); }
+
+/* date popup: gold for the anniversary */
+.modal-body.ev-gold .date { color: #A57800; }
+.modal-body.ev-gold h3 { text-decoration: underline wavy #E9B21F; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+
+/* date popup photo carousel */
+.ev-carousel { margin: 16px 0 4px; }
+.ev-track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none;
+  border-radius: 18px; background: var(--blush);
+}
+.ev-track::-webkit-scrollbar { display: none; }
+.ev-slide { flex: 0 0 100%; scroll-snap-align: center; padding: 0; border: 0; background: none; aspect-ratio: 4 / 5; cursor: zoom-in; }
+.ev-slide img { width: 100%; height: 100%; object-fit: cover; }
+.ev-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.ev-dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .18); transition: width .25s var(--ease), background-color .25s; }
+.ev-dot.on { width: 20px; border-radius: 4px; background: var(--ink); }
+
+/* pinch-to-zoom viewer */
+.zoom { position: fixed; inset: 0; z-index: 120; background: rgba(20, 12, 8, .94); opacity: 0; transition: opacity .25s ease; }
+.zoom.open { opacity: 1; }
+.zoom-stage { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; touch-action: none; }
+.zoom-stage img { max-width: 100%; max-height: var(--vh); object-fit: contain; transform-origin: center; will-change: transform; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.zoom-close { position: absolute; top: calc(12px + var(--safe-top)); right: 12px; margin: 0; float: none; width: 46px; height: 46px; background: var(--cream); color: var(--ink); font-size: 19px; }
+.zoom-hint { position: absolute; left: 0; right: 0; bottom: calc(16px + var(--safe-bottom)); margin: 0; text-align: center; font-size: 12px; font-weight: 600; color: rgba(255, 250, 211, .7); pointer-events: none; }
+
+/* "A Note From The Future" */
+.journal { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+.journal-input {
+  width: 100%; min-height: 220px; resize: vertical;
+  padding: 16px; border-radius: 18px; border: 2px solid var(--peach);
+  background: #fff; font: inherit; font-size: 17px; line-height: 1.6; color: var(--ink);
+  outline: none; transition: border-color .2s;
+}
+.journal-input:focus { border-color: var(--ink); }
+.journal-input.wrong { animation: shake .45s ease; border-color: var(--wrong); }
+.journal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.journal-entry { background: #fff; border-radius: 18px; padding: 16px; box-shadow: var(--shadow); animation: slideIn .4s var(--ease); }
+.journal-entry.current { border: 2px solid var(--pink); }
+.journal-entry small { display: block; font-size: 12px; font-weight: 700; color: #d85566; margin-bottom: 6px; }
+.journal-entry p { margin: 0 0 12px; white-space: pre-line; font-size: 16px; line-height: 1.6; }
+.journal-entry:not(.current) p { font-size: 15px; }
+.journal-past { font-family: var(--font-display); font-size: 17px; margin: 10px 0 0; }
 
 .lightbox { background: rgba(255, 250, 211, .97); opacity: 0; transition: opacity .3s ease; touch-action: pan-y; }
 .lightbox.open { opacity: 1; }

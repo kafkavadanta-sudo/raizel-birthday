@@ -1,0 +1,1 @@
+Drop this date's photos in this folder (jpg/png/webp). They show in order of file name.

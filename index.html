@@ -32,7 +32,7 @@
   <div id="dashboard" class="dashboard" hidden>
     <header class="nav" id="nav">
       <div class="nav-bar">
-        <a href="#top" class="nav-brand">R <span aria-hidden="true">❤</span> K</a>
+        <a href="#top" class="nav-brand" aria-label="Back to top">🌸</a>
         <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
           <span>Menu</span>
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -153,7 +153,15 @@
     <button class="lb-nav lb-next" id="lbNext" aria-label="Next photo">›</button>
   </div>
 
+  <!-- Pinch-to-zoom photo viewer (opened from a date popup's photos) -->
+  <div class="zoom" id="zoom" hidden>
+    <div class="zoom-stage" id="zoomStage"><img id="zoomImg" alt="" draggable="false"></div>
+    <button class="modal-close zoom-close" id="zoomClose" aria-label="Close zoom">✕</button>
+    <p class="zoom-hint">Pinch or scroll to zoom · double-tap to reset</p>
+  </div>
+
   <script src="js/content.js" defer></script>
+  <script src="js/photo-manifest.js" defer></script>
   <script src="js/giftcodec.js" defer></script>
   <script src="js/gifts.js" defer></script>
   <script src="js/audio.js" defer></script>

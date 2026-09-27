@@ -1,0 +1,4 @@
+Carousel photos live here.
+Drop the new ones as:
+  AFFECTUM CAROUSELS - 1.png … AFFECTUM CAROUSELS - 8.png
+(listed in js/content.js → conveyorPhotos)

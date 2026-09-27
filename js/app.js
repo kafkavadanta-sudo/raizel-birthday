@@ -501,7 +501,11 @@
   })();
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { closeModal(); closeLightbox(); }
+    if (e.key === "Escape") {
+      if (!zoom.hidden) return closeZoom(); // zoom closes first, back to the popup
+      closeModal();
+      closeLightbox();
+    }
     if (!lb.hidden && e.key === "ArrowRight") lbStep(1);
     if (!lb.hidden && e.key === "ArrowLeft") lbStep(-1);
   });
@@ -548,35 +552,61 @@
     }, { passive: true });
   }
 
+  /* ---------- photo helpers ---------- */
+  // Encodes spaces etc. in file names ("GALLERY - 1.png" → "GALLERY%20-%201.png")
+  function assetUrl(p) {
+    try { return encodeURI(decodeURI(p)); } catch (e) { return encodeURI(p); }
+  }
+  // Photos that fail to load (e.g. not uploaded yet) are skipped, not shown broken.
+  var badSrc = {};
+  function usable(list) {
+    return (list || []).filter(function (p) { return !badSrc[p.src]; })
+      .map(function (p) { return { src: assetUrl(p.src), alt: p.alt || "", raw: p.src }; });
+  }
+  function skipIfBroken(img, raw, rebuild) {
+    img.addEventListener("error", function () {
+      if (badSrc[raw]) return;
+      badSrc[raw] = true;
+      clearTimeout(rebuild.t);
+      rebuild.t = setTimeout(rebuild, 250);
+    });
+  }
+
   /* ---------- photo conveyor ---------- */
   function buildConveyor() {
-    var photos = S.conveyorPhotos || [];
     var conveyor = $("#conveyor"), track = $("#conveyorTrack");
-    if (!photos.length) { conveyor.hidden = true; return; }
-    // Repeat so one "half" is always wider than the screen → seamless loop
-    var reps = Math.max(1, Math.ceil(900 / (photos.length * 128)));
-    for (var copy = 0; copy < 2; copy++) {
-      for (var r = 0; r < reps; r++) {
-        photos.forEach(function (p, i) {
-          var item = el("div", "conveyor-item");
-          var b = el("button");
-          b.type = "button";
-          b.setAttribute("aria-label", "Open photo " + (i + 1));
-          if (copy || r) { b.tabIndex = -1; item.setAttribute("aria-hidden", "true"); }
-          var img = el("img");
-          img.src = p.src;
-          img.alt = copy || r ? "" : p.alt || "";
-          img.width = 116; img.height = 145;
-          img.decoding = "async";
-          img.draggable = false;
-          b.appendChild(img);
-          b.addEventListener("click", function () { openLightbox(photos, i); });
-          item.appendChild(b);
-          track.appendChild(item);
-        });
+    function render() {
+      var photos = usable(S.conveyorPhotos);
+      track.innerHTML = "";
+      conveyor.hidden = !photos.length;
+      if (!photos.length) return;
+      // Repeat so one "half" is always wider than the screen → seamless loop
+      var reps = Math.max(1, Math.ceil(900 / (photos.length * 128)));
+      for (var copy = 0; copy < 2; copy++) {
+        for (var r = 0; r < reps; r++) {
+          photos.forEach(function (p, i) {
+            var item = el("div", "conveyor-item");
+            var b = el("button");
+            b.type = "button";
+            b.setAttribute("aria-label", "Open photo " + (i + 1));
+            if (copy || r) { b.tabIndex = -1; item.setAttribute("aria-hidden", "true"); }
+            var img = el("img");
+            img.src = p.src;
+            img.alt = copy || r ? "" : p.alt;
+            img.width = 116; img.height = 145;
+            img.decoding = "async";
+            img.draggable = false;
+            skipIfBroken(img, p.raw, render);
+            b.appendChild(img);
+            b.addEventListener("click", function () { openLightbox(photos, i); });
+            item.appendChild(b);
+            track.appendChild(item);
+          });
+        }
       }
+      track.style.setProperty("--dur", photos.length * reps * 5 + "s");
     }
-    track.style.setProperty("--dur", photos.length * reps * 5 + "s");
+    render();
     var resume;
     conveyor.addEventListener("touchstart", function () { clearTimeout(resume); conveyor.classList.add("paused"); }, { passive: true });
     ["touchend", "touchcancel"].forEach(function (ev) {
@@ -586,23 +616,55 @@
     });
   }
 
-  /* ---------- about her ---------- */
+  /* ---------- live refresh (ages, calendar hearts, day counts) ---------- */
+  var liveFns = [];
+  function onNewMinute(fn) { liveFns.push(fn); }
+  setInterval(function () { liveFns.forEach(function (fn) { fn(); }); }, 60 * 1000);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) liveFns.forEach(function (fn) { fn(); });
+  });
+
+  /* ---------- about Raizel ---------- */
+  function ageFrom(birthKey) {
+    var b = parseKey(birthKey), t = new Date();
+    var age = t.getFullYear() - b.getFullYear();
+    if (t.getMonth() < b.getMonth() || (t.getMonth() === b.getMonth() && t.getDate() < b.getDate())) age--;
+    return age;
+  }
   function buildAbout() {
     var a = S.aboutHer, box = $("#aboutBody");
-    (a.paragraphs || []).forEach(function (t) { box.appendChild(el("p", null, t)); });
-    if (a.facts && a.facts.length) {
-      var facts = el("div", "facts");
-      a.facts.forEach(function (f) {
-        var d = el("div", "fact");
-        d.appendChild(el("b", null, f.label));
-        d.appendChild(document.createTextNode(f.value));
-        facts.appendChild(d);
+    var ages = [];
+    if (a.generals && a.generals.length) {
+      if (a.generalsTitle) box.appendChild(el("h3", "about-sub", a.generalsTitle));
+      var dl = el("dl", "generals");
+      a.generals.forEach(function (g) {
+        var row = el("div", "general");
+        row.appendChild(el("dt", null, g.label));
+        var dd = el("dd", null, g.value || "");
+        if (g.birthdate) ages.push({ node: dd, birthdate: g.birthdate });
+        row.appendChild(dd);
+        dl.appendChild(row);
       });
-      box.appendChild(facts);
+      box.appendChild(dl);
     }
+    if (a.cards && a.cards.length) {
+      var grid = el("div", "about-grid");
+      a.cards.forEach(function (c) {
+        var card = el("div", "about-item");
+        card.appendChild(el("b", null, c.label));
+        card.appendChild(el("span", null, c.value));
+        grid.appendChild(card);
+      });
+      box.parentNode.insertBefore(grid, box.nextSibling);
+    }
+    function updateAges() {
+      ages.forEach(function (x) { x.node.textContent = String(ageFrom(x.birthdate)); });
+    }
+    updateAges();
+    onNewMinute(updateAges);
   }
 
-  /* ---------- dates calendar ---------- */
+  /* ---------- "Remember This Day?" calendar ---------- */
   function parseKey(key) {
     var p = key.split("-").map(Number);
     return new Date(p[0], p[1] - 1, p[2]);
@@ -615,6 +677,69 @@
     return t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
   }
 
+  var MONTHS_UPPER = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+  function folderKey(name) {
+    return String(name).toUpperCase().replace(/\s+/g, " ").trim().replace(/^0+(?=\d)/, "");
+  }
+  // Photos for a date: from its folder (via js/photo-manifest.js), e.g. "3 JULY 2026"
+  function eventPhotos(key, ev) {
+    if (ev.photos && ev.photos.length) return ev.photos.map(assetUrl);
+    var p = key.split("-").map(Number);
+    var folder = ev.folder || p[2] + " " + MONTHS_UPPER[p[1] - 1] + " " + p[0];
+    var dates = (window.PHOTO_MANIFEST && PHOTO_MANIFEST.dates) || {};
+    var want = folderKey(folder), match = null;
+    Object.keys(dates).forEach(function (name) { if (folderKey(name) === want) match = name; });
+    if (!match) return [];
+    var root = S.dates.photosRoot || "assets/photos/dates/";
+    return dates[match].map(function (f) { return assetUrl(root + match + "/" + f); });
+  }
+
+  function buildEventCarousel(srcs, title) {
+    var wrap = el("div", "ev-carousel");
+    var track = el("div", "ev-track");
+    var dots = el("div", "ev-dots");
+    wrap.append(track, dots);
+    srcs.forEach(function (src, i) {
+      var slide = el("button", "ev-slide");
+      slide.type = "button";
+      slide.setAttribute("aria-label", "Zoom photo " + (i + 1));
+      var img = el("img");
+      img.src = src;
+      img.alt = title;
+      img.decoding = "async";
+      img.draggable = false;
+      img.addEventListener("error", function () { slide.remove(); refresh(); });
+      slide.appendChild(img);
+      slide.addEventListener("click", function () { openZoom(src, title); });
+      track.appendChild(slide);
+    });
+    function current() { return Math.round(track.scrollLeft / Math.max(1, track.clientWidth)); }
+    function refresh() {
+      var n = track.children.length;
+      if (!n) { wrap.remove(); return; }
+      dots.innerHTML = "";
+      dots.hidden = n < 2;
+      for (var i = 0; i < n; i++) {
+        var d = el("button", "ev-dot");
+        d.type = "button";
+        d.setAttribute("aria-label", "Photo " + (i + 1));
+        d.addEventListener("click", (function (k) {
+          return function () { track.scrollTo({ left: k * track.clientWidth, behavior: "smooth" }); };
+        })(i));
+        dots.appendChild(d);
+      }
+      mark();
+    }
+    function mark() {
+      var c = current();
+      Array.prototype.forEach.call(dots.children, function (d, i) { d.classList.toggle("on", i === c); });
+    }
+    var t;
+    track.addEventListener("scroll", function () { clearTimeout(t); t = setTimeout(mark, 60); }, { passive: true });
+    refresh();
+    return wrap;
+  }
+
   function openEvent(key) {
     var ev = S.dates.events[key];
     var frag = document.createDocumentFragment();
@@ -622,16 +747,10 @@
     var h = el("h3", null, ev.title);
     h.id = "modalTitle";
     frag.appendChild(h);
-    if (ev.photo) {
-      var img = el("img", "photo");
-      img.src = ev.photo;
-      img.alt = ev.title;
-      img.decoding = "async";
-      frag.appendChild(img);
-    }
+    var photos = eventPhotos(key, ev);
+    if (photos.length) frag.appendChild(buildEventCarousel(photos, ev.title));
     if (ev.story) { frag.appendChild(el("h4", null, "The story")); frag.appendChild(el("p", null, ev.story)); }
-    if (ev.why) { frag.appendChild(el("h4", null, "Why it matters")); frag.appendChild(el("p", null, ev.why)); }
-    openModal(frag);
+    openModal(frag, key === S.dates.highlightDate ? "ev-gold" : "");
   }
 
   function buildCalendar() {
@@ -645,7 +764,7 @@
     }
     var ws = cfg.weekStartsOn || 0;
     var dows = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    var today = todayKey();
+    var cells = []; // [key, node]
 
     months.forEach(function (mo) {
       var page = el("div", "cal-month-grid");
@@ -666,12 +785,28 @@
         } else {
           cell = el("div", "cal-day", d);
         }
-        if (key === today) cell.classList.add("today");
+        if (key === cfg.highlightDate) cell.classList.add("gold");
+        cells.push([key, cell]);
         grid.appendChild(cell);
       }
       page.appendChild(grid);
       scroller.appendChild(page);
     });
+
+    // Today outline + a little heart on every day from togetherSince → today (keeps extending)
+    var markedFor = null;
+    function markDays() {
+      var today = todayKey();
+      if (today === markedFor) return;
+      markedFor = today;
+      cells.forEach(function (c) {
+        var together = cfg.togetherSince && c[0] >= cfg.togetherSince && c[0] <= today;
+        c[1].classList.toggle("together", !!together);
+        c[1].classList.toggle("today", c[0] === today);
+      });
+    }
+    markDays();
+    onNewMinute(markDays);
 
     function idx() { return Math.round(scroller.scrollLeft / Math.max(1, scroller.clientWidth)); }
     function update() {
@@ -690,7 +825,7 @@
     // timeline chips under the calendar
     var tl = $("#timeline");
     Object.keys(events).sort().forEach(function (key) {
-      var chip = el("button", "chip");
+      var chip = el("button", "chip" + (key === cfg.highlightDate ? " gold" : ""));
       chip.type = "button";
       chip.appendChild(el("small", null, fmtDate(parseKey(key))));
       chip.appendChild(el("span", null, events[key].title));
@@ -704,19 +839,129 @@
     });
   }
 
+  /* ---------- zoom viewer (pinch / wheel / double-tap) ---------- */
+  var zoom = $("#zoom"), zStage = $("#zoomStage"), zImg = $("#zoomImg"), zTimer;
+  var Z = { s: 1, x: 0, y: 0 }, ptrs = new Map(), gesture = null, lastTap = 0;
+  function zApply(animate) {
+    zImg.style.transition = animate ? "transform .25s ease" : "none";
+    zImg.style.transform = "translate(" + Z.x + "px," + Z.y + "px) scale(" + Z.s + ")";
+  }
+  function zClamp() {
+    Z.s = Math.min(5, Math.max(1, Z.s));
+    var mx = (zImg.offsetWidth * (Z.s - 1)) / 2, my = (zImg.offsetHeight * (Z.s - 1)) / 2;
+    Z.x = Math.min(mx, Math.max(-mx, Z.x));
+    Z.y = Math.min(my, Math.max(-my, Z.y));
+    if (Z.s === 1) { Z.x = 0; Z.y = 0; }
+  }
+  // Zoom to scale `ns`, keeping the screen point (px, py) — relative to the stage centre — still
+  function zoomAt(ns, px, py, base) {
+    base = base || Z;
+    var lx = (px - base.x) / base.s, ly = (py - base.y) / base.s;
+    Z.s = Math.min(5, Math.max(1, ns));
+    Z.x = px - Z.s * lx;
+    Z.y = py - Z.s * ly;
+    zClamp();
+  }
+  function rel(e) {
+    var r = zStage.getBoundingClientRect();
+    return { x: e.clientX - r.left - r.width / 2, y: e.clientY - r.top - r.height / 2 };
+  }
+  function openZoom(src, alt) {
+    clearTimeout(zTimer);
+    Z = { s: 1, x: 0, y: 0 };
+    zApply(false);
+    zImg.src = src;
+    zImg.alt = alt || "";
+    zoom.hidden = false;
+    requestAnimationFrame(function () { requestAnimationFrame(function () { zoom.classList.add("open"); }); });
+    $("#zoomClose").focus({ preventScroll: true });
+  }
+  function closeZoom() {
+    if (zoom.hidden) return;
+    zoom.classList.remove("open");
+    ptrs.clear();
+    gesture = null;
+    zTimer = setTimeout(function () { zoom.hidden = true; zImg.removeAttribute("src"); }, 250);
+  }
+  $("#zoomClose").addEventListener("click", closeZoom);
+  function startGesture() {
+    var pts = Array.from(ptrs.values());
+    if (pts.length >= 2) {
+      gesture = {
+        type: "pinch",
+        dist: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1,
+        mid: { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 },
+        base: { s: Z.s, x: Z.x, y: Z.y },
+      };
+    } else if (pts.length === 1) {
+      gesture = { type: "pan", start: pts[0], base: { x: Z.x, y: Z.y } };
+    } else gesture = null;
+  }
+  zStage.addEventListener("pointerdown", function (e) {
+    try { zStage.setPointerCapture(e.pointerId); } catch (err) {}
+    ptrs.set(e.pointerId, rel(e));
+    startGesture();
+    if (ptrs.size === 1) {
+      var now = Date.now(), p = rel(e);
+      if (now - lastTap < 300) {
+        if (Z.s > 1.05) Z = { s: 1, x: 0, y: 0 };
+        else zoomAt(2.5, p.x, p.y);
+        zApply(true);
+        lastTap = 0;
+      } else lastTap = now;
+    }
+  });
+  zStage.addEventListener("pointermove", function (e) {
+    if (!ptrs.has(e.pointerId) || !gesture) return;
+    ptrs.set(e.pointerId, rel(e));
+    var pts = Array.from(ptrs.values());
+    if (gesture.type === "pinch" && pts.length >= 2) {
+      var dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      var mid = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 };
+      zoomAt(gesture.base.s * (dist / gesture.dist), gesture.mid.x, gesture.mid.y, gesture.base);
+      Z.x += mid.x - gesture.mid.x;
+      Z.y += mid.y - gesture.mid.y;
+      zClamp();
+      zApply(false);
+    } else if (gesture.type === "pan" && Z.s > 1) {
+      Z.x = gesture.base.x + pts[0].x - gesture.start.x;
+      Z.y = gesture.base.y + pts[0].y - gesture.start.y;
+      zClamp();
+      zApply(false);
+    }
+  });
+  function zEnd(e) {
+    ptrs.delete(e.pointerId);
+    startGesture();
+  }
+  zStage.addEventListener("pointerup", zEnd);
+  zStage.addEventListener("pointercancel", zEnd);
+  zStage.addEventListener("wheel", function (e) {
+    e.preventDefault();
+    var p = rel(e);
+    zoomAt(Z.s * Math.exp(-e.deltaY * 0.0025), p.x, p.y);
+    zApply(false);
+  }, { passive: false });
+  // Stop Safari from zooming the whole page while the viewer is open
+  ["gesturestart", "gesturechange"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { if (!zoom.hidden) e.preventDefault(); });
+  });
+
   /* ---------- letters ---------- */
   function buildLetters() {
     var grid = $("#letterGrid"), colors = ["var(--pink)", "var(--peach)", "var(--blush)"];
     S.letters.items.forEach(function (letter, i) {
-      var card = el("button", "letter-card");
+      var journal = letter.type === "journal";
+      var card = el("button", "letter-card" + (journal ? " journal-card" : ""));
       card.type = "button";
       card.style.setProperty("--c", colors[i % colors.length]);
       card.appendChild(el("span", "icon", letter.icon || "💌"));
       var inner = el("div");
       inner.appendChild(el("h3", null, letter.title));
-      inner.appendChild(el("span", "open", "tap to open ✉️"));
+      inner.appendChild(el("span", "open", journal ? "tap to write ✍️" : "tap to open ✉️"));
       card.appendChild(inner);
       card.addEventListener("click", function () {
+        if (journal) return openJournal(letter);
         var frag = document.createDocumentFragment();
         var h = el("h3", null, letter.title);
         h.id = "modalTitle";
@@ -726,6 +971,112 @@
       });
       grid.appendChild(card);
     });
+  }
+
+  /* ---------- "A Note From The Future" — letters to her future self ---------- */
+  var FK = "rb.future";
+  function openJournal(letter) {
+    var st = store.get(FK, { entries: [], draft: "" });
+    st.entries = st.entries || [];
+    var mode = st.entries.length ? "view" : "compose";
+    var editingId = null;
+
+    var root = el("div");
+    var h = el("h3", null, letter.title);
+    h.id = "modalTitle";
+    root.appendChild(h);
+    root.appendChild(el("p", "letter-text", letter.text));
+    var area = el("div", "journal");
+    root.appendChild(area);
+
+    function save() { store.set(FK, st); }
+    function stamp(e) {
+      return "Written " + fmtDate(new Date(e.created)) + (e.updated ? " · edited " + fmtDate(new Date(e.updated)) : "");
+    }
+    function button(label, cls, fn) {
+      var b = el("button", "btn btn-small " + (cls || ""), label);
+      b.type = "button";
+      b.addEventListener("click", fn);
+      return b;
+    }
+    function edit(id) { editingId = id; mode = "compose"; render(true); }
+    function remove(id) {
+      if (!confirm("Delete this letter? This can't be undone.")) return;
+      st.entries = st.entries.filter(function (x) { return x.id !== id; });
+      if (editingId === id) editingId = null;
+      if (!st.entries.length) mode = "compose";
+      save();
+      render();
+    }
+    function entryCard(e, isCurrent) {
+      var c = el("article", "journal-entry" + (isCurrent ? " current" : ""));
+      c.appendChild(el("small", null, stamp(e)));
+      c.appendChild(el("p", null, e.text));
+      var actions = el("div", "journal-actions");
+      actions.appendChild(button("Edit", "btn-soft", function () { edit(e.id); }));
+      actions.appendChild(button("Delete", "btn-soft", function () { remove(e.id); }));
+      if (isCurrent) actions.appendChild(button("Write Another", "", function () { editingId = null; mode = "compose"; render(true); }));
+      c.appendChild(actions);
+      return c;
+    }
+
+    function render(focus) {
+      area.innerHTML = "";
+      var editing = editingId && st.entries.find(function (x) { return x.id === editingId; });
+      if (mode === "compose") {
+        var ta = el("textarea", "journal-input");
+        ta.rows = 9;
+        ta.placeholder = "Dear future me…";
+        ta.setAttribute("aria-label", "Your letter to your future self");
+        ta.value = editing ? editing.text : st.draft || "";
+        ta.addEventListener("input", function () {
+          if (!editing) { st.draft = ta.value; save(); }
+        });
+        area.appendChild(ta);
+        var row = el("div", "journal-actions");
+        row.appendChild(button(editing ? "Save" : "Send 💌", "", function () {
+          var text = ta.value.trim();
+          if (!text) {
+            ta.classList.remove("wrong");
+            void ta.offsetWidth;
+            ta.classList.add("wrong");
+            return;
+          }
+          if (editing) {
+            editing.text = text;
+            editing.updated = Date.now();
+            // edited letter becomes the one on top
+            st.entries = [editing].concat(st.entries.filter(function (x) { return x !== editing; }));
+          } else {
+            st.entries.unshift({ id: "f" + Date.now().toString(36), text: text, created: Date.now() });
+            st.draft = "";
+          }
+          editingId = null;
+          mode = "view";
+          save();
+          render();
+          var r = area.getBoundingClientRect();
+          burst(r.left + r.width / 2, r.top + 60, { count: 16, spread: 0.8 });
+        }));
+        if (st.entries.length) {
+          row.appendChild(button("Cancel", "btn-soft", function () { editingId = null; mode = "view"; render(); }));
+        }
+        area.appendChild(row);
+        if (focus) setTimeout(function () { ta.focus(); }, 50);
+      }
+
+      var list = st.entries.filter(function (x) { return x !== editing; });
+      if (mode === "view" && list.length) {
+        area.appendChild(entryCard(list[0], true));
+        list = list.slice(1);
+      }
+      if (list.length) {
+        area.appendChild(el("h4", "journal-past", "Earlier letters to yourself"));
+        list.forEach(function (e) { area.appendChild(entryCard(e, false)); });
+      }
+    }
+    render();
+    openModal(root, "letter-paper");
   }
 
   /* ---------- us in numbers ---------- */
@@ -886,21 +1237,28 @@
 
   /* ---------- gallery ---------- */
   function buildGallery() {
-    var grid = $("#galleryGrid"), photos = S.gallery.photos || [];
-    photos.forEach(function (p, i) {
-      var b = el("button");
-      b.type = "button";
-      b.setAttribute("aria-label", "Enlarge photo " + (i + 1));
-      var img = el("img");
-      img.src = p.src;
-      img.alt = p.alt || "";
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.draggable = false;
-      b.appendChild(img);
-      b.addEventListener("click", function () { openLightbox(photos, i); });
-      grid.appendChild(b);
-    });
+    var grid = $("#galleryGrid");
+    function render() {
+      var photos = usable(S.gallery.photos);
+      grid.innerHTML = "";
+      if (!photos.length) grid.appendChild(el("p", "soon", "Photos coming soon 📸"));
+      photos.forEach(function (p, i) {
+        var b = el("button");
+        b.type = "button";
+        b.setAttribute("aria-label", "Enlarge photo " + (i + 1));
+        var img = el("img");
+        img.src = p.src;
+        img.alt = p.alt;
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.draggable = false;
+        skipIfBroken(img, p.raw, render);
+        b.appendChild(img);
+        b.addEventListener("click", function () { openLightbox(photos, i); });
+        grid.appendChild(b);
+      });
+    }
+    render();
   }
 
   /* ---------- playlist ---------- */
