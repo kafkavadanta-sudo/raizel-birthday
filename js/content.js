@@ -67,7 +67,7 @@ window.SITE = {
   },
 
   // Photo conveyor belt under the hero.
-  // 👉 DROP FILES HERE: assets/photos/conveyor/  (e.g. "AFFECTUM CAROUSELS - 1.png")
+  // 👉 DROP FILES HERE: assets/photos/conveyor/  (e.g. "AFFECTUM CAROUSELS - 1.webp")
   // Any file that's missing is simply skipped, so nothing breaks before you add it.
   conveyorPhotos: [
     { src: "assets/photos/conveyor/01.webp", alt: "Us" },
@@ -78,14 +78,16 @@ window.SITE = {
     { src: "assets/photos/conveyor/06.webp", alt: "Us" },
     { src: "assets/photos/conveyor/07.webp", alt: "Us" },
     { src: "assets/photos/conveyor/08.webp", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 1.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 2.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 3.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 4.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 5.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 6.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 7.png", alt: "Us" },
-    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 8.png", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 1.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 2.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 3.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 4.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 5.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 6.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 7.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 8.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 9.webp", alt: "Us" },
+    { src: "assets/photos/conveyor/AFFECTUM CAROUSELS - 10.webp", alt: "Us" },
   ],
 
   aboutHer: {
@@ -342,18 +344,18 @@ I love you honey!`,
 
   gallery: {
     title: "Gallery of My Favorite Pics",
-    // 👉 DROP FILES HERE: assets/photos/gallery/  ("GALLERY - 1.png" … "GALLERY - 10.png")
+    // 👉 DROP FILES HERE: assets/photos/gallery/  ("GALLERY - 1.webp" … "GALLERY - 10.webp")
     photos: [
-      { src: "assets/photos/gallery/GALLERY - 1.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 2.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 3.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 4.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 5.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 6.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 7.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 8.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 9.png", alt: "Raizel" },
-      { src: "assets/photos/gallery/GALLERY - 10.png", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 1.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 2.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 3.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 4.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 5.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 6.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 7.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 8.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 9.webp", alt: "Raizel" },
+      { src: "assets/photos/gallery/GALLERY - 10.webp", alt: "Raizel" },
     ],
   },
 

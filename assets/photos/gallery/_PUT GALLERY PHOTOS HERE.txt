@@ -1,3 +1,2 @@
-Drop the gallery photos here:
-  GALLERY - 1.png … GALLERY - 10.png
-(listed in js/content.js → gallery.photos)
+Gallery photos live here (listed in js/content.js → gallery.photos).
+WebP/JPG around 1600px keeps the page fast.

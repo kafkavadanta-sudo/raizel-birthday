@@ -33,8 +33,8 @@ Every drop spot has a `_PUT … HERE.txt` note inside it.
 
 | Where | What to drop | Notes |
 | --- | --- | --- |
-| `assets/photos/conveyor/` | `AFFECTUM CAROUSELS - 1.png` … `- 8.png` | Moving strip under the hero. The list is in `js/content.js` → `conveyorPhotos`. |
-| `assets/photos/gallery/` | `GALLERY - 1.png` … `- 10.png` | "Gallery of My Favorite Pics". The list is in `js/content.js` → `gallery.photos`. |
+| `assets/photos/conveyor/` | `AFFECTUM CAROUSELS - 1.webp` … `- 10.webp` | Moving strip under the hero. The list is in `js/content.js` → `conveyorPhotos`. |
+| `assets/photos/gallery/` | `GALLERY - 1.webp` … `- 10.webp` | "Gallery of My Favorite Pics". The list is in `js/content.js` → `gallery.photos`. |
 | `assets/photos/dates/<DATE>/` | any images, e.g. `assets/photos/dates/3 JULY 2026/1.jpg` | One folder per calendar date. They already exist. Photos show in file-name order. |
 
 A photo that isn't there yet is skipped, never shown broken.

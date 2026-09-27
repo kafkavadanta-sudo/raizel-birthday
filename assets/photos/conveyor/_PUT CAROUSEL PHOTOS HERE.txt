@@ -1,4 +1,2 @@
-Carousel photos live here.
-Drop the new ones as:
-  AFFECTUM CAROUSELS - 1.png … AFFECTUM CAROUSELS - 8.png
-(listed in js/content.js → conveyorPhotos)
+Carousel photos live here (listed in js/content.js → conveyorPhotos).
+WebP/JPG around 1200px keeps the page fast.
