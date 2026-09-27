@@ -246,6 +246,13 @@ window.SITE = {
         title: "Another DBL Date",
         story: "Astaga, kok ini gemas ahahahahah. Cuma bentar sih, but you were so pretty... :(",
       },
+      // ✨ Special date: wiggles on the calendar; opens a big celebratory popup with emoji confetti
+      "2026-10-11": {
+        special: true,
+        title: "Raizel's 19th Birthday! 🌸🎂",
+        subtitle: "Yayy, happy birthday!! Another special day for the best girlfriend in the world 🌎",
+        confetti: ["🌸", "🎂", "🎉", "💖", "✨", "🎀", "🥳", "💕", "🍰", "🎈"],
+      },
     },
   },
 

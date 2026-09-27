@@ -439,6 +439,7 @@
   function closeModal() {
     if (modal.hidden || !modal.classList.contains("open")) return;
     modal.classList.remove("open");
+    modalCard.classList.remove("impact");
     modalTimer = setTimeout(function () {
       modal.hidden = true;
       unlockScroll();
@@ -744,6 +745,7 @@
 
   function openEvent(key) {
     var ev = S.dates.events[key];
+    if (ev.special) return openSpecial(key, ev);
     var frag = document.createDocumentFragment();
     frag.appendChild(el("div", "date", fmtDate(parseKey(key))));
     var h = el("h3", null, ev.title);
@@ -751,8 +753,48 @@
     frag.appendChild(h);
     var photos = eventPhotos(key, ev);
     if (photos.length) frag.appendChild(buildEventCarousel(photos, ev.title));
-    if (ev.story) { frag.appendChild(el("h4", null, "The story")); frag.appendChild(el("p", null, ev.story)); }
+    if (ev.story) { frag.appendChild(el("h4", null, "What Happened That Day")); frag.appendChild(el("p", null, ev.story)); }
     openModal(frag, key === S.dates.highlightDate ? "ev-gold" : "");
+  }
+
+  // A special date: big centred title + subtitle, emoji confetti rain, and a cute "impact" shake
+  function openSpecial(key, ev) {
+    var frag = document.createDocumentFragment();
+    var wrap = el("div", "special-pop");
+    wrap.appendChild(el("div", "date", fmtDate(parseKey(key))));
+    var h = el("h3", "special-title", ev.title);
+    h.id = "modalTitle";
+    wrap.appendChild(h);
+    if (ev.subtitle) wrap.appendChild(el("p", "special-sub", ev.subtitle));
+    frag.appendChild(wrap);
+    var photos = eventPhotos(key, ev);
+    if (photos.length) frag.appendChild(buildEventCarousel(photos, ev.title));
+    if (ev.story) { frag.appendChild(el("h4", null, "What Happened That Day")); frag.appendChild(el("p", null, ev.story)); }
+    openModal(frag, "ev-special");
+    modalCard.classList.remove("impact");
+    setTimeout(function () {
+      void modalCard.offsetWidth;
+      modalCard.classList.add("impact");
+      emojiRain(ev.confetti);
+    }, 260);
+  }
+
+  function emojiRain(list) {
+    list = list && list.length ? list : EMOJI;
+    var layer = el("div", "emoji-rain");
+    layer.setAttribute("aria-hidden", "true");
+    for (var i = 0; i < 46; i++) {
+      var s = el("span", null, list[i % list.length]);
+      s.style.left = rand(0, 100) + "vw";
+      s.style.setProperty("--s", rand(18, 34) + "px");
+      s.style.setProperty("--d", rand(1.1, 1.8) + "s");
+      s.style.setProperty("--r", rand(-240, 240) + "deg");
+      s.style.setProperty("--dx", rand(-40, 40) + "px");
+      s.style.animationDelay = rand(0, 0.45) + "s";
+      layer.appendChild(s);
+    }
+    body.appendChild(layer);
+    setTimeout(function () { layer.remove(); }, 2500);
   }
 
   function buildCalendar() {
@@ -788,6 +830,7 @@
           cell = el("div", "cal-day", d);
         }
         if (key === cfg.highlightDate) cell.classList.add("gold");
+        if (events[key] && events[key].special) cell.classList.add("special");
         cells.push([key, cell]);
         grid.appendChild(cell);
       }
@@ -827,7 +870,7 @@
     // timeline chips under the calendar
     var tl = $("#timeline");
     Object.keys(events).sort().forEach(function (key) {
-      var chip = el("button", "chip" + (key === cfg.highlightDate ? " gold" : ""));
+      var chip = el("button", "chip" + (key === cfg.highlightDate ? " gold" : "") + (events[key].special ? " special" : ""));
       chip.type = "button";
       chip.appendChild(el("small", null, fmtDate(parseKey(key))));
       chip.appendChild(el("span", null, events[key].title));

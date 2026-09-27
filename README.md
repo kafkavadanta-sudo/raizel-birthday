@@ -52,6 +52,7 @@ Each date lives in `js/content.js` → `dates.events` as `"YYYY-MM-DD": { title,
 - `highlightDate` is the gold box (May 1, 2026).
 - `togetherSince` is where the little hearts start. They extend to today automatically.
 - To point a date at a differently named folder, add `folder: "My Folder"` to it.
+- `special: true` (used on Oct 11, 2026) makes a date wiggle on the calendar and open a big celebratory popup with `title`, `subtitle` and emoji `confetti`.
 
 ### Links
 In `js/content.js`:

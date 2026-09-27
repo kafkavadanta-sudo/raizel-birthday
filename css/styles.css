@@ -367,6 +367,25 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .cal-day.gold::after { content: "★"; color: #A57800; }
 @keyframes goldGlow { 50% { box-shadow: 0 3px 18px rgba(233, 178, 31, .85); } }
 .chip.gold { background: linear-gradient(145deg, #FFF4BF, #FBD869); }
+/* her birthday — special, wiggling */
+.cal-day.special {
+  background: linear-gradient(145deg, #FFD1E0, #FF9FB8 55%, #FF7FA0);
+  outline: 2px solid #E85C85; outline-offset: -2px;
+  box-shadow: 0 3px 14px rgba(232, 92, 133, .5);
+  animation: wiggle-day 2.4s ease-in-out infinite;
+  z-index: 1;
+}
+.cal-day.special::after { content: "🎂"; top: -8px; right: -6px; font-size: 13px; }
+@keyframes wiggle-day {
+  0%, 60%, 100% { transform: rotate(0) scale(1); }
+  66% { transform: rotate(-9deg) scale(1.08); }
+  72% { transform: rotate(8deg) scale(1.08); }
+  78% { transform: rotate(-6deg) scale(1.05); }
+  84% { transform: rotate(4deg); }
+  90% { transform: rotate(-2deg); }
+}
+.chip.special { background: linear-gradient(145deg, #FFE0EA, #FFB1C6); animation: wiggle-day 2.4s ease-in-out infinite; }
+.chip.special small { color: #b8325a; }
 .chip.gold small { color: #8a6500; }
 
 .timeline { display: flex; gap: 10px; overflow-x: auto; padding: 16px 2px 8px; scrollbar-width: none; scroll-snap-type: x proximity; }
@@ -557,6 +576,39 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 /* date popup: gold for the anniversary */
 .modal-body.ev-gold .date { color: #A57800; }
 .modal-body.ev-gold h3 { text-decoration: underline wavy #E9B21F; text-underline-offset: 6px; text-decoration-thickness: 2px; }
+
+/* special date popup (her birthday) */
+.modal-body.ev-special { text-align: center; background: radial-gradient(circle at 50% 0%, #FFE3EC 0%, var(--cream) 70%); }
+.special-pop { padding: 26px 0 6px; }
+.special-pop .date { color: #d85566; }
+.modal-body.ev-special h3.special-title {
+  margin: 14px 0 16px; font-size: clamp(38px, 11vw, 54px); line-height: 1.08; font-weight: 800;
+  animation: special-pop .7s cubic-bezier(.2, 1.4, .4, 1) .15s both;
+}
+.special-sub { margin: 0 auto; max-width: 22em; font-family: var(--font-display); font-style: italic; font-size: 19px; line-height: 1.5; animation: slideIn .6s var(--ease) .45s both; }
+.modal-body.ev-special h4, .modal-body.ev-special p:not(.special-sub) { text-align: left; }
+@keyframes special-pop { from { opacity: 0; transform: scale(.6); } }
+.modal-card.impact { animation: impact .55s ease both; }
+@keyframes impact {
+  0% { transform: none; }
+  15% { transform: translate(-7px, 2px) rotate(-1.2deg) scale(1.02); }
+  30% { transform: translate(6px, -2px) rotate(1deg); }
+  45% { transform: translate(-5px, 1px) rotate(-.7deg); }
+  60% { transform: translate(4px, 0) rotate(.5deg); }
+  75% { transform: translate(-2px, 0) rotate(-.2deg); }
+  100% { transform: none; }
+}
+.emoji-rain { position: fixed; inset: 0; z-index: 130; pointer-events: none; overflow: hidden; }
+.emoji-rain span {
+  position: absolute; top: -40px; font-size: var(--s, 24px);
+  animation: emoji-fall var(--d, 1.4s) cubic-bezier(.3, .6, .5, 1) forwards;
+}
+@keyframes emoji-fall {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+  10% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx, 0), calc(var(--vh) + 60px)) rotate(var(--r, 180deg)); }
+}
 
 /* date popup photo carousel */
 .ev-carousel { margin: 16px 0 4px; }
