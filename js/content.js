@@ -104,7 +104,7 @@ window.SITE = {
       { label: "Her foods", value: "Meat 🍖" },
       { label: "Her drinks", value: "Baileys Coffee & anything milk" },
       { label: "Her dessert", value: "Dubai Chewy Cuki, Smoothie Bowls" },
-      { label: "Her favorite artists", value: "Jhéné Aiko, Mom Jeans, American Baseball, Drake, Future, Mac Miller, The Smashing Pumpkins, PARTYNEXTDOOR" },
+      { label: "Her favorite artists", value: "Jhené Aiko, Mom Jeans, Modern Baseball, Drake, Future, Mac Miller, The Smashing Pumpkins, PARTYNEXTDOOR" },
       { label: "Her favorite anime/series", value: "NANA" },
       { label: "Her favorite celebrity", value: "Ryan Gosling" },
       { label: "Her favorite movies", value: "La La Land, Blue Valentine, Spider-Man: Into the Spider-Verse" },
