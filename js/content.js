@@ -86,13 +86,16 @@ window.SITE = {
     title: "About Raizel",
     // "Generals" list. An item with `birthdate` shows her age, calculated live.
     generalsTitle: "Generals",
+    // `emoji` shows next to each label. `birthdate` = age calculated live.
     generals: [
-      { label: "Name", value: "Alaricia Raizel Avano" },
-      { label: "Age", birthdate: "2007-10-11" },
-      { label: "Sex", value: "Girl" },
-      { label: "Faith", value: "Catholic" },
-      { label: "Student at", value: "Communication Science '25, Universitas Gadjah Mada" },
-      { label: "Member of", value: "AIESEC in UGM 25/26" },
+      { emoji: "💖", label: "Name", value: "Alaricia Raizel Avano" },
+      { emoji: "🎂", label: "Age", birthdate: "2007-10-11" },
+      { emoji: "👧", label: "Gender", value: "Girl" },
+      { emoji: "✝️", label: "Faith", value: "Catholic" },
+      { emoji: "♎", label: "Sign", value: "Libra" },
+      { emoji: "🧠", label: "MBTI", value: "INFP" },
+      { emoji: "🎓", label: "Student At", value: "Communication Science '25, Universitas Gadjah Mada" },
+      { emoji: "🌍", label: "Member of", value: "AIESEC in UGM 25/26" },
     ],
     cards: [
       { label: "Her foods", value: "Meat 🍖" },

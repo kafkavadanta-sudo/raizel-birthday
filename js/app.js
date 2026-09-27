@@ -639,7 +639,9 @@
       var dl = el("dl", "generals");
       a.generals.forEach(function (g) {
         var row = el("div", "general");
-        row.appendChild(el("dt", null, g.label));
+        var dt = el("dt", null, g.label);
+        if (g.emoji) dt.prepend(el("span", "general-emoji", g.emoji));
+        row.appendChild(dt);
         var dd = el("dd", null, g.value || "");
         if (g.birthdate) ages.push({ node: dd, birthdate: g.birthdate });
         row.appendChild(dd);
