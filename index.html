@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFAD3">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="For Raizel">
+  <meta name="format-detection" content="telephone=no">
+  <title>For Raizel 💌</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Quicksand:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // Decide journey vs dashboard before first paint (no flash on revisits)
+    try { if (JSON.parse(localStorage.getItem("rb.journey") || "{}").done) document.documentElement.classList.add("mode-dashboard"); } catch (e) {}
+  </script>
+</head>
+<body>
+  <noscript><p class="noscript">This little gift needs JavaScript turned on 💌</p></noscript>
+
+  <!-- ============ PART 1: THE JOURNEY ============ -->
+  <div id="journey" class="journey">
+    <div id="stage" class="stage" aria-live="polite"></div>
+  </div>
+
+  <!-- ============ PART 2: THE DASHBOARD ============ -->
+  <div id="dashboard" class="dashboard" hidden>
+    <header class="nav" id="nav">
+      <div class="nav-bar">
+        <a href="#top" class="nav-brand">R <span aria-hidden="true">❤</span> K</a>
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu">
+          <span>Menu</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <nav class="nav-menu" id="navMenu" aria-label="Sections"><ul id="navList"></ul></nav>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <h1 class="hero-title" data-text="hero.title"></h1>
+        <p class="hero-sub" data-text="hero.subtitle"></p>
+        <p class="hero-body" data-text="hero.body"></p>
+        <p class="hero-enjoy" data-text="hero.closing"></p>
+      </section>
+
+      <div class="conveyor" id="conveyor" aria-label="Photos of us">
+        <div class="conveyor-track" id="conveyorTrack"></div>
+      </div>
+
+      <section class="section" id="about">
+        <h2 data-text="aboutHer.title"></h2>
+        <div class="card about-card" id="aboutBody"></div>
+      </section>
+
+      <section class="section" id="dates">
+        <h2 data-text="dates.title"></h2>
+        <p class="section-intro" data-text="dates.intro"></p>
+        <div class="card cal-card">
+          <div class="cal-head">
+            <button class="icon-btn" id="calPrev" aria-label="Previous month">‹</button>
+            <div class="cal-month" id="calLabel"></div>
+            <button class="icon-btn" id="calNext" aria-label="Next month">›</button>
+          </div>
+          <div class="cal-scroller" id="calScroller"></div>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="section" id="letters">
+        <h2 data-text="letters.title"></h2>
+        <p class="section-intro" data-text="letters.intro"></p>
+        <div class="letter-grid" id="letterGrid"></div>
+      </section>
+
+      <section class="section" id="numbers">
+        <h2 data-text="numbers.title"></h2>
+        <div class="stats" id="stats"></div>
+      </section>
+
+      <section class="section" id="radio">
+        <h2 data-text="radio.title"></h2>
+        <div class="card radio-card" id="radioCard"></div>
+      </section>
+
+      <section class="section" id="bucket">
+        <h2 data-text="bucketList.title"></h2>
+        <div class="card bucket-card">
+          <ul class="bucket-list" id="bucketList"></ul>
+          <form class="bucket-add" id="bucketForm" autocomplete="off">
+            <input id="bucketInput" type="text" maxlength="80" enterkeyhint="done" aria-label="New bucket list item">
+            <button class="btn btn-small" type="submit">Add</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="section" id="gallery">
+        <h2 data-text="gallery.title"></h2>
+        <div class="gallery" id="galleryGrid"></div>
+      </section>
+
+      <section class="section" id="playlist">
+        <h2 data-text="playlist.title"></h2>
+        <div class="card playlist-card" id="playlistCard"></div>
+      </section>
+
+      <section class="section" id="code">
+        <h2 data-text="code.title"></h2>
+        <div class="card code-card">
+          <p class="section-intro" data-text="code.intro"></p>
+          <form class="code-form" id="codeForm" autocomplete="off">
+            <input id="codeInput" type="text" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Gift code">
+            <button class="btn btn-small" type="submit">Unlock</button>
+          </form>
+          <p class="code-msg" id="codeMsg" role="status"></p>
+          <div class="reveal" id="reveal" hidden></div>
+          <div class="unlocked" id="unlocked"></div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p data-text="footer"></p>
+        <button class="link-btn" id="replay">↺ replay the beginning</button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Sound toggle (always visible) -->
+  <button class="sound-toggle" id="soundToggle" aria-label="Play music" aria-pressed="false">
+    <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+
+  <!-- Generic modal (dates, letters) -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" data-close aria-label="Close">✕</button>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Photo lightbox -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="modal-close lb-close" data-close aria-label="Close">✕</button>
+    <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous photo">‹</button>
+    <figure class="lb-figure" id="lbFigure"><img id="lbImg" alt=""><figcaption id="lbCount"></figcaption></figure>
+    <button class="lb-nav lb-next" id="lbNext" aria-label="Next photo">›</button>
+  </div>
+
+  <script src="js/content.js" defer></script>
+  <script src="js/giftcodec.js" defer></script>
+  <script src="js/gifts.js" defer></script>
+  <script src="js/audio.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
