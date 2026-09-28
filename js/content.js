@@ -134,6 +134,12 @@ window.SITE = {
     photosRoot: "assets/photos/dates/",
     // Gold box on the calendar (the day we started dating)
     highlightDate: "2026-05-01",
+    // Months covered by a video-game style "locked" screen (YYYY-MM, inclusive)
+    locked: {
+      from: "2026-01",
+      to: "2026-03",
+      text: "This is the timeskip, we don't talk about it haha 👀",
+    },
     // Little heart on every day from this date through today
     togetherSince: "2026-05-01",
     events: {

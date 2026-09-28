@@ -849,6 +849,23 @@
         grid.appendChild(cell);
       }
       page.appendChild(grid);
+      var ym = mo.y + "-" + pad(mo.m);
+      if (cfg.locked && ym >= cfg.locked.from && ym <= cfg.locked.to) {
+        page.classList.add("locked");
+        grid.setAttribute("aria-hidden", "true");
+        var lock = el("button", "cal-lock");
+        lock.type = "button";
+        lock.setAttribute("aria-label", "Locked: " + cfg.locked.text);
+        lock.appendChild(el("span", "cal-lock-icon", "🔒"));
+        lock.appendChild(el("span", "cal-lock-badge", "LOCKED"));
+        lock.appendChild(el("span", "cal-lock-text", cfg.locked.text));
+        lock.addEventListener("click", function () {
+          this.classList.remove("nope");
+          void this.offsetWidth;
+          this.classList.add("nope");
+        });
+        page.appendChild(lock);
+      }
       scroller.appendChild(page);
     });
 

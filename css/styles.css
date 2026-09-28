@@ -344,7 +344,27 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
   scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain;
 }
 .cal-scroller::-webkit-scrollbar { display: none; }
-.cal-month-grid { flex: 0 0 100%; scroll-snap-align: start; padding: 0 4px; }
+.cal-month-grid { flex: 0 0 100%; scroll-snap-align: start; padding: 0 4px; position: relative; }
+/* "locked" months — video-game style */
+.cal-month-grid.locked .cal-grid { filter: blur(3px) grayscale(1); opacity: .35; pointer-events: none; -webkit-user-select: none; user-select: none; }
+.cal-lock {
+  position: absolute; inset: 0 4px; border: 0; border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px; text-align: center; color: var(--cream);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .05) 0 10px, transparent 10px 20px),
+    linear-gradient(160deg, rgba(40, 28, 40, .82), rgba(20, 14, 24, .9));
+  box-shadow: inset 0 0 0 3px rgba(255, 219, 176, .35), inset 0 0 30px rgba(0, 0, 0, .4);
+}
+.cal-lock-icon { font-size: 46px; line-height: 1; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .4)); animation: lock-bob 2.2s ease-in-out infinite; }
+.cal-lock-badge {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 800; font-size: 14px; letter-spacing: .3em;
+  padding: 5px 10px 5px 14px; border-radius: 6px; background: var(--pink); color: var(--ink);
+  box-shadow: 0 3px 0 #d98080;
+}
+.cal-lock-text { font-weight: 700; font-size: 15px; line-height: 1.4; max-width: 17em; }
+.cal-lock.nope .cal-lock-icon { animation: shake .45s ease; }
+@keyframes lock-bob { 50% { transform: translateY(-4px) rotate(-4deg); } }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
 .cal-dow { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; padding-bottom: 4px; }
 .cal-day { aspect-ratio: 1; display: grid; place-items: center; border-radius: 12px; font-size: 14px; font-weight: 500; position: relative; }
