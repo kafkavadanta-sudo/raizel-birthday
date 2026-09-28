@@ -667,6 +667,20 @@
     onNewMinute(updateAges);
   }
 
+  /* ---------- looping animation between sections ---------- */
+  function buildBetweenGif() {
+    var box = $("#betweenGif"), g = S.betweenGif;
+    if (!box || !g || !g.src) { if (box) box.hidden = true; return; }
+    var img = el("img");
+    img.src = assetUrl(g.src);
+    img.alt = g.alt || "";
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.draggable = false;
+    img.addEventListener("error", function () { box.hidden = true; });
+    box.appendChild(img);
+  }
+
   /* ---------- "Remember This Day?" calendar ---------- */
   function parseKey(key) {
     var p = key.split("-").map(Number);
@@ -1453,6 +1467,7 @@
   buildNav();
   buildConveyor();
   buildAbout();
+  buildBetweenGif();
   buildCalendar();
   buildLetters();
   buildNumbers();

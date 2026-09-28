@@ -109,6 +109,13 @@ window.SITE = {
     ],
   },
 
+  // Looping animation shown between "About Raizel" and "Remember This Day?".
+  // Made from AFFECTUM/GIF/IMG_9116.GIF: white background removed, saved as animated WebP.
+  betweenGif: {
+    src: "assets/gif/couple.webp",
+    alt: "Pixel-art Kafka and Raizel sitting together on a bench",
+  },
+
   /* "Remember This Day?" calendar — scrollable from `startMonth` to `endMonth` (YYYY-MM).
      Each event key is a date "YYYY-MM-DD". Tapping that day opens its popup.
 
