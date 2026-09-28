@@ -1018,7 +1018,7 @@
     });
   }
 
-  /* ---------- "A Note From The Future" — letters to her future self ---------- */
+  /* ---------- "Notes For The Future" — letters to her future self ---------- */
   var FK = "rb.future";
   function openJournal(letter) {
     var st = store.get(FK, { entries: [], draft: "" });

@@ -632,7 +632,7 @@ main { max-width: 640px; margin: 0 auto; padding: 0 0 calc(40px + var(--safe-bot
 .zoom-close { position: absolute; top: calc(12px + var(--safe-top)); right: 12px; margin: 0; float: none; width: 46px; height: 46px; background: var(--cream); color: var(--ink); font-size: 19px; }
 .zoom-hint { position: absolute; left: 0; right: 0; bottom: calc(16px + var(--safe-bottom)); margin: 0; text-align: center; font-size: 12px; font-weight: 600; color: rgba(255, 250, 211, .7); pointer-events: none; }
 
-/* "A Note From The Future" */
+/* "Notes For The Future" */
 .journal { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
 .journal-input {
   width: 100%; min-height: 220px; resize: vertical;

@@ -98,4 +98,4 @@ The page has `noindex` set so search engines skip it.
 - `rb.journey`: journey progress/finished
 - `rb.bucket`: checked items and items she added
 - `rb.gifts`: gifts she has unlocked
-- `rb.future`: her "A Note From The Future" letters
+- `rb.future`: her "Notes For The Future" letters

@@ -301,7 +301,7 @@ I love you honey!`,
       {
         // Interactive card: she writes letters to her future self (saved on her phone)
         type: "journal",
-        title: "A Note From The Future",
+        title: "Notes For The Future",
         icon: "🕊️",
         text: `Since I've been writing a lot about you, I want to give you the chance to write something about yourself. This letter is special because you can write a letter to your future self. Write something, not for anyone else, not for me, but for yourself. What will you tell yourself in 5 years time?`,
       },
